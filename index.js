@@ -28,19 +28,20 @@ function generateRoomCode() {
 }
 
 app.post('/api/room/join', (req, res) => {
-  const { code } = req.body;
+  const { code: originalCode } = req.body;
+  const CODE = originalCode.toUpperCase();
   console.log('req.body', req.body);
-  const roomExist = rooms[code];
+  const roomExist = rooms[CODE];
 
   if (!roomExist) {
-    res.status(404).json({
+    return res.status(404).json({
       status: false,
       message: "Ruangan tidak ditemukan"
-    })
+    });
   }
 
   if (roomExist.playerCount >= 2) {
-    res.status(404).json({
+    return res.status(404).json({
       status: false,
       message: "Ruangan tidak ditemukan"
     });
@@ -49,7 +50,7 @@ app.post('/api/room/join', (req, res) => {
   roomExist.playerCount += 1;
 
   res.json({
-    code,
+    code: CODE,
     theme: roomExist.theme
   });
 });
