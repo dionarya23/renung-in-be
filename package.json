@@ -1,18 +1,21 @@
 {
   "name": "renung-in-be-v2",
-  "version": "1.0.0",
-  "main": "index.js",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
+    "@elysiajs/cors": "^1.4.0",
+    "elysia": "^1.4.15",
     "socket.io": "^4.8.1"
   }
 }
