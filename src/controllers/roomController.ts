@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import { roomService } from '../services/roomService';
 import { generateRoomCode } from '../utils/roomGenerator';
 import { checkRateLimit } from '../middleware/rateLimit';
@@ -10,62 +11,62 @@ interface JoinRoomBody {
   code: string;
 }
 
-export const createRoom = ({ body, request, set }: { body: CreateRoomBody; request: Request; set: any }) => {
-  if (!checkRateLimit(request, 'CREATE_ROOM', set)) {
-    return {
+export const createRoom = (req: Request<{}, {}, CreateRoomBody>, res: Response) => {
+  if (!checkRateLimit(req, 'CREATE_ROOM', res)) {
+    return res.status(429).json({
       status: false,
       message: 'Kamu udah bikin terlalu banyak ruangan. Tunggu sebentar ya!'
-    };
+    });
   }
 
-  const { theme } = body;
+  const { theme } = req.body;
   let roomCode = generateRoomCode();
-  
+
   while (roomService.roomExists(roomCode)) {
     roomCode = generateRoomCode();
   }
-  
+
   roomService.createRoom(roomCode, theme);
-  
-  return {
+
+  return res.json({
     code: roomCode,
     theme
-  };
+  });
 };
 
-export const joinRoom = ({ body, request, set }: { body: JoinRoomBody; request: Request; set: any }) => {
-  if (!checkRateLimit(request, 'JOIN_ROOM', set)) {
-    return {
+export const joinRoom = (req: Request<{}, {}, JoinRoomBody>, res: Response) => {
+  if (!checkRateLimit(req, 'JOIN_ROOM', res)) {
+    return res.status(429).json({
       status: false,
       message: 'Terlalu banyak percobaan join. Tunggu sebentar ya!'
-    };
+    });
   }
 
-  const { code: originalCode } = body;
+  const { code: originalCode } = req.body;
   const CODE = originalCode.toUpperCase();
-  
-  console.log('Join room request:', body);
-  
+
+  console.log('Join room request:', req.body);
+
   const room = roomService.getRoom(CODE);
-  
+
   if (!room) {
-    return {
+    return res.json({
       status: false,
       message: "Ruangan tidak ditemukan"
-    };
+    });
   }
-  
+
   if (roomService.isRoomFull(CODE)) {
-    return {
+    return res.json({
       status: false,
       message: "Ruangan sudah penuh"
-    };
+    });
   }
-  
+
   room.playerCount += 1;
-  
-  return {
+
+  return res.json({
     code: CODE,
     theme: room.theme
-  };
+  });
 };

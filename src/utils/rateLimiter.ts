@@ -5,7 +5,7 @@ interface RateLimitEntry {
 
 class RateLimiter {
   private limits: Map<string, RateLimitEntry> = new Map();
-  private cleanupInterval: Timer;
+  private cleanupInterval: NodeJS.Timeout;
 
   constructor() {
     this.cleanupInterval = setInterval(() => {

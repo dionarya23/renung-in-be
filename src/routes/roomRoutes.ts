@@ -1,14 +1,7 @@
-import { Elysia, t } from 'elysia';
+import { Router } from 'express';
 import * as roomController from '../controllers/roomController';
 
-export const roomRoutes = new Elysia({ prefix: '/api/room' })
-  .post('/create', roomController.createRoom, {
-    body: t.Object({
-      theme: t.String()
-    })
-  })
-  .post('/join', roomController.joinRoom, {
-    body: t.Object({
-      code: t.String()
-    })
-  });
+export const roomRoutes = Router();
+
+roomRoutes.post('/create', roomController.createRoom);
+roomRoutes.post('/join', roomController.joinRoom);
